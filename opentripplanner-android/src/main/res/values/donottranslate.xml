@@ -51,4 +51,8 @@
     <string name="geocoder_nominatim">MapQuest Nominatim</string>
     <string name="geocoder_google_places">Google Places</string>
     <string name="custom_server_url_hint">http://x.x.x/otp</string>
+
+    <string name="google_maps_api_key">AIzaSyBS0_Gv-A3-ocYlZyUp7zkZzW0PSLdfGwU</string>
+    <string name="parse_application_id">1fiaUIGamXFm3SeTPIP9uIznZpFjWwGi8PrBlBwo</string>
+    <string name="parse_client_key">HqBvitHVX7Puc5aSSXUH2e2ObK0lF2wZjw0wu9Yn</string>
 </resources>

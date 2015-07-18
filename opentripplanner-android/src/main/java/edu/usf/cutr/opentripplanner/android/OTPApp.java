@@ -331,14 +331,13 @@ public class OTPApp extends Application {
         Parse.setLogLevel(BuildConfig.DEBUG ? Parse.LOG_LEVEL_DEBUG : Parse.LOG_LEVEL_NONE);
 
         // Initialize Parse
-        Parse.initialize(this, "1fiaUIGamXFm3SeTPIP9uIznZpFjWwGi8PrBlBwo",
-                "HqBvitHVX7Puc5aSSXUH2e2ObK0lF2wZjw0wu9Yn");
+        Parse.initialize(this, getString(R.string.parse_application_id), getString(R.string.parse_client_key));
 
         // Save the current Installation to Parse
         ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                // Subscribe to global channel
+                // Subscribe to default channel
                 ParsePush.subscribeInBackground("");
 
                 // Subscribe to debug channel in debug mode
