@@ -640,13 +640,13 @@ public class MainFragment extends Fragment implements
 
         IconGenerator generator = new IconGenerator(getActivity());
         generator.setStyle(IconGenerator.STYLE_RED);
-        Bitmap icon = generator.makeIcon(event.getRoute());
+        Bitmap icon = generator.makeIcon(event.icon != null ? event.icon : "XX");
 
         MarkerOptions options = new MarkerOptions()
                 .position(event.getLatLng())
                 .icon(BitmapDescriptorFactory.fromBitmap(icon))
-                .title("Route #" + event.getRoute())
-                .snippet(event.getLocationString());
+                .title(event.title)
+                .snippet(event.snippet != null ? event.snippet : event.getLocationString());
 
         mRouteMarker = mMap.addMarker(options);
         mRouteMarkerId = mRouteMarker.getId();

@@ -9,16 +9,14 @@ import timber.log.Timber;
 
 public class LocationEvent {
 
-    public String route;
+    public String icon;
+    public String title;
+    public String snippet;
     public double lat;
     public double lon;
 
     public LocationEvent() {
         super();
-    }
-
-    public String getRoute() {
-        return route;
     }
 
     public LatLng getLatLng() {
@@ -29,7 +27,9 @@ public class LocationEvent {
         LocationEvent event = new LocationEvent();
         try {
             JSONObject json = new JSONObject(data);
-            event.route = json.optString("route");
+            event.icon = json.optString("icon");
+            event.title = json.optString("title");
+            event.snippet = json.optString("snippet");
             event.lat = json.optDouble("lat");
             event.lon = json.optDouble("lon");
         } catch (JSONException e) {
