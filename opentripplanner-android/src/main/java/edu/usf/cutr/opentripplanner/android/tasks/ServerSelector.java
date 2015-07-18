@@ -383,7 +383,7 @@ public class ServerSelector extends AsyncTask<LatLng, Integer, Integer>
                             if (activityRetrieved != null) {
                                 final EditText tbBaseURL = new EditText(activityRetrieved);
                                 String actualCustomServer = prefs
-                                        .getString(PREFERENCE_KEY_CUSTOM_SERVER_URL, "");
+                                        .getString(PREFERENCE_KEY_CUSTOM_SERVER_URL, "http://159.8.41.197:8080/otp");
                                 tbBaseURL.setText(actualCustomServer);
 
                                 AlertDialog.Builder urlAlert = new AlertDialog.Builder(
@@ -471,7 +471,7 @@ public class ServerSelector extends AsyncTask<LatLng, Integer, Integer>
                 prefsEditor.putBoolean(PREFERENCE_KEY_CUSTOM_SERVER_URL_IS_VALID, true);
                 prefsEditor.commit();
                 if (selectedCustomServer) {
-                    String baseURL = prefs.getString(PREFERENCE_KEY_CUSTOM_SERVER_URL, "");
+                    String baseURL = prefs.getString(PREFERENCE_KEY_CUSTOM_SERVER_URL, "http://159.8.41.197:8080/otp");
                     selectedServer = new Server(baseURL, context);
                     callback.onServerSelectorComplete(selectedServer);
                 }

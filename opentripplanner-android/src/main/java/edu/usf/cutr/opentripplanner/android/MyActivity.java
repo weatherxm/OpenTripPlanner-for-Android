@@ -139,7 +139,7 @@ public class MyActivity extends FragmentActivity implements OtpFragment {
                                 mainFragment, true, false, false);
                         Server server;
                         if (prefs.getBoolean(OTPApp.PREFERENCE_KEY_SELECTED_CUSTOM_SERVER, false)){
-                            server = new Server(prefs.getString(OTPApp.PREFERENCE_KEY_CUSTOM_SERVER_URL, ""),
+                            server = new Server(prefs.getString(OTPApp.PREFERENCE_KEY_CUSTOM_SERVER_URL, "http://159.8.41.197:8080/otp"),
                                     this);
                         }
                         else{

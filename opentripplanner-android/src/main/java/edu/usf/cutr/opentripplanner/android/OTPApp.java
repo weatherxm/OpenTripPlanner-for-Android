@@ -18,9 +18,16 @@ package edu.usf.cutr.opentripplanner.android;
 
 import android.app.Application;
 
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.SaveCallback;
+
 import java.util.concurrent.TimeUnit;
 
 import edu.usf.cutr.opentripplanner.android.model.Server;
+import timber.log.Timber;
 
 /*
  * Modified by Khoa Tran
@@ -312,4 +319,33 @@ public class OTPApp extends Application {
         return selectedServer;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
+        // Enable Parse logging in debug builds
+        Parse.setLogLevel(BuildConfig.DEBUG ? Parse.LOG_LEVEL_DEBUG : Parse.LOG_LEVEL_NONE);
+
+        // Initialize Parse
+        Parse.initialize(this, "1fiaUIGamXFm3SeTPIP9uIznZpFjWwGi8PrBlBwo",
+                "HqBvitHVX7Puc5aSSXUH2e2ObK0lF2wZjw0wu9Yn");
+
+        // Save the current Installation to Parse
+        ParseInstallation.getCurrentInstallation().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                // Subscribe to global channel
+                ParsePush.subscribeInBackground("");
+
+                // Subscribe to debug channel in debug mode
+                if (BuildConfig.DEBUG) {
+                    ParsePush.subscribeInBackground("debug");
+                }
+            }
+        });
+    }
 }

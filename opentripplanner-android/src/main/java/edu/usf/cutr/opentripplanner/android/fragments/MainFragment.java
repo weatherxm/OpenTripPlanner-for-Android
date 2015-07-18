@@ -115,6 +115,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.ui.IconGenerator;
+import com.squareup.otto.Subscribe;
 
 import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.Leg;
@@ -167,18 +169,21 @@ import edu.usf.cutr.opentripplanner.android.tasks.RequestTimesForTrips;
 import edu.usf.cutr.opentripplanner.android.tasks.ServerChecker;
 import edu.usf.cutr.opentripplanner.android.tasks.ServerSelector;
 import edu.usf.cutr.opentripplanner.android.tasks.TripRequest;
+import edu.usf.cutr.opentripplanner.android.util.AndroidBus;
 import edu.usf.cutr.opentripplanner.android.util.BikeRentalStationInfo;
 import edu.usf.cutr.opentripplanner.android.util.ConversionUtils;
+import edu.usf.cutr.opentripplanner.android.util.CustomAddress;
 import edu.usf.cutr.opentripplanner.android.util.CustomInfoWindowAdapter;
 import edu.usf.cutr.opentripplanner.android.util.DateTimeDialog;
 import edu.usf.cutr.opentripplanner.android.util.DirectionsGenerator;
+import edu.usf.cutr.opentripplanner.android.util.LocationEvent;
 import edu.usf.cutr.opentripplanner.android.util.LocationUtil;
+import edu.usf.cutr.opentripplanner.android.util.PlacesAutoCompleteAdapter;
 import edu.usf.cutr.opentripplanner.android.util.RangeSeekBar;
 import edu.usf.cutr.opentripplanner.android.util.RangeSeekBar.OnRangeSeekBarChangeListener;
 import edu.usf.cutr.opentripplanner.android.util.RightDrawableOnTouchListener;
 import edu.usf.cutr.opentripplanner.android.util.TripInfo;
-import edu.usf.cutr.opentripplanner.android.util.PlacesAutoCompleteAdapter;
-import edu.usf.cutr.opentripplanner.android.util.CustomAddress;
+import timber.log.Timber;
 
 /**
  * Main UI screen of the mOTPApp, showing the map.
@@ -359,6 +364,8 @@ public class MainFragment extends Fragment implements
     private GraphMetadata mCustomServerMetadata = null;
 
     private OTPGeocoding mGeoCodingTask;
+
+    private Marker mRouteMarker;
 
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -612,8 +619,36 @@ public class MainFragment extends Fragment implements
         if (!mMapFailed) {
             initializeMapInterface(mMap);
         }
+
+        AndroidBus.getInstance().register(this);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        AndroidBus.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onLocationEvent(LocationEvent event) {
+        Timber.d("Received location event");
+
+        if (mRouteMarker != null) {
+            mRouteMarker.remove();
+        }
+
+        IconGenerator generator = new IconGenerator(getActivity());
+        generator.setStyle(IconGenerator.STYLE_RED);
+        Bitmap icon = generator.makeIcon(event.getRoute());
+
+        MarkerOptions options = new MarkerOptions()
+                .position(event.getLatLng())
+                .icon(BitmapDescriptorFactory.fromBitmap(icon))
+                .title("Route #" + event.getRoute())
+                .snippet(event.getLocationString());
+
+        mRouteMarker = mMap.addMarker(options);
+    }
 
     private void initializeMapInterface(GoogleMap mMap) {
         UiSettings uiSettings = mMap.getUiSettings();
@@ -628,7 +663,6 @@ public class MainFragment extends Fragment implements
 
         addInterfaceListeners();
     }
-
 
     private void addInterfaceListeners() {
 
@@ -2199,7 +2233,7 @@ public class MainFragment extends Fragment implements
         mIsEndLocationGeocodingCompleted = false;
 
         mTbEndLocation.requestFocus();
-        
+
         setTextBoxLocation("", false);
     }
 
@@ -2639,7 +2673,7 @@ public class MainFragment extends Fragment implements
         Server server;
         if (!mMapFailed){
             if (mPrefs.getBoolean(OTPApp.PREFERENCE_KEY_SELECTED_CUSTOM_SERVER, false)) {
-                server = new Server(mPrefs.getString(OTPApp.PREFERENCE_KEY_CUSTOM_SERVER_URL, ""),
+                server = new Server(mPrefs.getString(OTPApp.PREFERENCE_KEY_CUSTOM_SERVER_URL, "http://159.8.41.197:8080/otp"),
                         mApplicationContext);
                 setSelectedServer(server, updateUI);
                 String bounds;
