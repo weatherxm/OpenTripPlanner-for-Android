@@ -366,6 +366,7 @@ public class MainFragment extends Fragment implements
     private OTPGeocoding mGeoCodingTask;
 
     private Marker mRouteMarker;
+    private String mRouteMarkerId;
 
     @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -648,6 +649,7 @@ public class MainFragment extends Fragment implements
                 .snippet(event.getLocationString());
 
         mRouteMarker = mMap.addMarker(options);
+        mRouteMarkerId = mRouteMarker.getId();
     }
 
     private void initializeMapInterface(GoogleMap mMap) {
@@ -824,6 +826,11 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onInfoWindowClick(Marker marker) {
+                // Ignore route marker
+                if (TextUtils.equals(marker.getId(), mRouteMarker.getId())) {
+                    return;
+                }
+
                 if (mBikeRentalStations != null && mBikeRentalStations.containsKey(marker)){
                     BikeRentalStationInfo bikeRentalStationInfo = mBikeRentalStations.get(marker);
                     setMarker(true, bikeRentalStationInfo.getLocation(), false, false);
