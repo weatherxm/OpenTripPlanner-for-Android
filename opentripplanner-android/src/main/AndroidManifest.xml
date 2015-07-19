@@ -18,6 +18,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <!-- To plan trip from/to contact address -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -81,6 +82,11 @@
             android:name=".AboutPlayServicesActivity"
             android:theme="@style/MyTheme"
             android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".TxmActivity"
+            android:exported="true"
+            android:theme="@style/MyTheme"
+            android:windowSoftInputMode="stateHidden"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -119,6 +125,13 @@
         <meta-data
             android:name="com.parse.push.notification_icon"
             android:resource="@drawable/ic_stat_tfa" />
+
+        <!-- Connectivity status listener -->
+        <receiver android:name=".util.WifiReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

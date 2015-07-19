@@ -29,8 +29,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 
 import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.Leg;
@@ -39,7 +43,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
 
 import edu.usf.cutr.opentripplanner.android.fragments.DirectionListFragment;
 import edu.usf.cutr.opentripplanner.android.fragments.MainFragment;
@@ -49,6 +52,10 @@ import edu.usf.cutr.opentripplanner.android.model.OTPBundle;
 import edu.usf.cutr.opentripplanner.android.model.Server;
 import edu.usf.cutr.opentripplanner.android.sqlite.ServersDataSource;
 import edu.usf.cutr.opentripplanner.android.tasks.ServerChecker;
+import edu.usf.cutr.opentripplanner.android.util.AndroidBus;
+import edu.usf.cutr.opentripplanner.android.util.TxmConnectionEvent;
+import edu.usf.cutr.opentripplanner.android.util.WifiUtils;
+import timber.log.Timber;
 
 /**
  * Main Activity for the OTP for Android app
@@ -77,6 +84,9 @@ public class MyActivity extends FragmentActivity implements OtpFragment {
 
     DateCompleteListener dateCompleteCallback;
 
+    View mSnackbar;
+    Button mSnackbarAction;
+
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +94,15 @@ public class MyActivity extends FragmentActivity implements OtpFragment {
 
         //	bundle = (OTPBundle)getLastCustomNonConfigurationInstance();
         setContentView(R.layout.activity);
+
+        mSnackbar = findViewById(R.id.snackbar);
+        mSnackbarAction = (Button) findViewById(R.id.action);
+        mSnackbarAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyActivity.this, TxmActivity.class));
+            }
+        });
 
         if (savedInstanceState != null) {
             mainFragment = (MainFragment) getSupportFragmentManager().findFragmentByTag(
@@ -100,6 +119,33 @@ public class MyActivity extends FragmentActivity implements OtpFragment {
             fragmentTransaction.commit();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AndroidBus.getInstance().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AndroidBus.getInstance().unregister(this);
+    }
+
+    @Subscribe
+    public void onTxmConnectionEvent(TxmConnectionEvent event) {
+        Timber.d("Connection event!");
+        mSnackbar.setVisibility(event.connected ? View.VISIBLE : View.GONE);
+        if (event.connected) {
+            Timber.d("Connected!");
+        }
+    }
+
+    @Produce
+    public TxmConnectionEvent produceWifiConnectionEvent() {
+        boolean isConnected = WifiUtils.isTxmConnected(this);
+        return new TxmConnectionEvent(isConnected);
     }
 
     @Override

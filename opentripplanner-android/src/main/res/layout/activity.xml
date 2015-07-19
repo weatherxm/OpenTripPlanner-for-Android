@@ -1,13 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
-            android:id="@+id/mainFragment"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-    </FrameLayout>
+        android:id="@+id/mainFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/snackbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/sysDkGray"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        tools:ignore="NewApi,UnusedAttribute">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Connected to TxM Wi-Fi"
+            android:textAppearance="?android:textAppearanceMediumInverse" />
+
+        <Button
+            android:id="@+id/action"
+            android:layout_width="72dp"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:minWidth="48dp"
+            android:text="VIEW"
+            android:textColor="@color/sysCyan" />
+
+    </LinearLayout>
+
+</FrameLayout>
